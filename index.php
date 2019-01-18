@@ -1,5 +1,5 @@
 <?php
-
+include_once 'Modele/loginDB.php';
 include_once 'Lib/Connexion.php';
 
 
@@ -22,34 +22,10 @@ include_once 'Lib/Connexion.php';
 	<tr>
 		<td></td><td><input type="submit" value="OK" ></td>
     </tr>
-	<tr>
-		<td><?php echo Connexion(); ?></td>
-    </tr>
 	</table>
+<div><?php echo VerificationConnexion(); ?></div>
 	</form>
-<?php 	
-	$dbLogin = new LoginDB();
-	/*$resultat = $dbLogin->RechercheTousUtilisateurObj();
-	if ($resultat)
-	{
-		foreach($resultat as $utilisateur)
-		{	
-  			echo $utilisateur->nom;
-  			echo '<br>';
-		}
-	}*/
-	/*
-	$resultat = $dbLogin->RechercheTousUtilisateurClasse();
-	if ($resultat)
-	{
-		foreach($resultat as $utilisateur)
-		{
-			echo $utilisateur->AfficherNom();
-			echo '<br>';
-		}
-	}
-	*/
-?>
+
 </body>
 </html>
 

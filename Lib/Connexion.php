@@ -1,39 +1,41 @@
 <?php
-include_once '/Modele/loginDB.php';
 
 
-//include(dirname(__FILE__)."/../Modele/loginDB.php");
-function Connexion()
+
+/***
+ * Vérifie si la requête est un POST
+ * @return boolean true si POST
+ */
+function VerificationMessagePost()
 {
-	$msg = "";
-	if (!empty($_POST['nom']) && !empty($_POST['mdp']))
-	{
+	return $_SERVER['REQUEST_METHOD'] == 'POST';
+}
+
+
+/***
+ * Teste si l'utilisateur est présent dans la base et s'il a le bon mot de passe
+ * @return string le message à afficher
+ */
+function VerificationConnexion()
+{
+	if (!VerificationMessagePost())	 return "";
 	
-		$dbLogin = new LoginDB();
-		$nom = $_POST['nom'];
-		$mdp = $_POST['mdp'];
-		$resultat = $dbLogin->RechercheUtilisateurCrypte($nom, $mdp);
-		//$resultat = $dbLogin->RechercheUtilisateurSimple($nom, $mdp);
-		if ($resultat)
-		{
-			if ($resultat['nbUtil'] == 1)
-			{
+	$msg = "Les identifiants sont incorrects";
+		
+		if (!empty($_POST['nom']) && !empty($_POST['mdp']))
+		{	
+			$nom = $_POST['nom'];
+			$mdp = $_POST['mdp'];
+			
+			$dbLogin = new LoginDB();
+			$resultat = $dbLogin->RechercheUtilisateurSimple($nom, $mdp);
+			
+			if ($resultat)
+			{	
 				$msg = "Vous êtes connecté";
 			}
-			else
-			{
-				$msg = "Vous n'êtes pas connecté";
-			}
 		}
-		else
-		{
-			$msg = "Vous n'êtes pas connecté";
-		}
-		
-		
-	}
-	return $msg;
-	
+		return $msg;
 }
 
 

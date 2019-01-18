@@ -1,14 +1,17 @@
 <?php
-include_once 'Metier/Utilisateur.php';
+
 class LoginDB
 {
+	/***
+	 * Initialisation de la connexion à la base de données
+	 */
 	private function initBase()
 	{
 		$user = 'root';
 		$pass = '';
 		$hote = 'localhost';
 		$port = '3306';
-		$base = 'loginSecurite';
+		$base = 'password';
 		$dsn="mysql:$hote;port=$port;dbname=$base";
 	
 		try
@@ -18,160 +21,38 @@ class LoginDB
 		}
 		catch (PDOException $e)
 		{
-			$msg ='Erreur de connexion avec la base de donnée';
+			$msg ='Erreur de connexion avec la base de données';
 			die($msg);
 		}
 		return $dbh;
 	}
 	
 	
-	
-	public function RechercheUtilisateur($nom, $mdp)
-	{
-		//Connexion à la base
-		$base = $this->initBase();
-		
-		
-		//SELECT avec FETCHALL()
-		$sql="select id from login where nom = :nom and mdp = :mdp";
-		$stmt = $base->prepare($sql);
-
-		$stmt->BindValue(':nom', $nom);
-		$stmt->BindValue(':mdp', $mdp);
-		
-		$retour = $stmt->execute();
-		
-		
-		if ($retour)
-		{		
-			$retour = $stmt->fetchAll();
-		}	
-	
-		
-		//Libération de la ressource
-		$base = NULL;
-		
-		return $retour;
-		
-	}
-		
-	public function RechercheUtilisateurCrypte($nom, $mdp)
-	{
-		//Connexion à la base
-		$base = $this->initBase();
-	
-		
-		//SELECT avec FETCHALL()
-		$sql="select count(*) as nbUtil from login where nom = :nom and mdp = md5(:mdp)";
-		$stmt = $base->prepare($sql);
-	
-		$stmt->BindValue(':nom', $nom);
-		$stmt->BindValue(':mdp', $mdp);
-	
-		$retour = $stmt->execute();
-	
-	
-		if ($retour)
-		{
-			$retour = $stmt->fetch();
-		}
-	
-	
-		//Libération de la ressource
-		$base = NULL;
-	
-		return $retour;
-	
-	}
-	
+	/***
+	 * Recherche si le nom et le mot de passe sont présents dans la base de données
+	 * @param string $nom le nom de l'utilisateur
+	 * @param string $mdp le mot de passe de l'utilisateur
+	 */
 	public function RechercheUtilisateurSimple($nom, $mdp)
 	{
 		
 		//Connexion à la base
 		$base = $this->initBase();
-	
-	
-		//SELECT avec FETCHALL()
-		$sql="select id from login where nom = '$nom' and mdp = '$mdp'";
 		
-		//$sql="select id from login where nom = '' or 1 = 1 and mdp = '$mdp'";
+		
+		$sql="select count(*) as nbUtil from utilisateur where mdp = md5('$mdp') and nom = '$nom' ";
+		
 		$resultat = $base->query($sql);
-	
 		
 		if ($resultat === false)
 		{
-			$retour = false;
+			return $resultat;
 		}
 		else
-		{
-			$retour = $resultat->fetchAll();
-	
+		{		
+			$utilisateur = $resultat->fetch();
+			return $utilisateur['nbUtil'] > 0;
 		}
-	
-		//Libération de la ressource
-		$base = NULL;
-	
-		return $retour;
 	
 	}
-	
-	public function RechercheTousUtilisateurObj()
-	{
-		//Connexion à la base
-		$base = $this->initBase();
-	
-	
-		//SELECT avec FETCHALL()
-		$sql="select id, nom, mdp from login";
-	
-		$resultat = $base->query($sql);
-	
-		
-		if ($resultat === false)
-		{
-			$retour = false;
-		}
-		else
-		{
-			$retour = $resultat->fetchAll(PDO::FETCH_OBJ);
-	
-		}
-	
-		//Libération de la ressource
-		$base = NULL;
-	
-		return $retour;
-	
-	}
-	
-	public function RechercheTousUtilisateurClasse()
-	{
-		//Connexion à la base
-		$base = $this->initBase();
-	
-	
-		//SELECT avec FETCHALL()
-		$sql="select id, nom, mdp from login";
-	
-		$resultat = $base->query($sql);
-	
-	
-		if ($resultat === false)
-		{
-			$retour = false;
-		}
-		else
-		{
-			$retour = $resultat->fetchAll(PDO::FETCH_CLASS,'Utilisateur');
-	
-		}
-	
-		//Libération de la ressource
-		$base = NULL;
-	
-		return $retour;
-	
-	}
-	
-	
 }
